@@ -24,13 +24,3 @@ def modify_gcode(input_path, output_path, nozzle_temp=None, bed_temp=None, print
         file.writelines(modified_lines)
 
     print(f"Modified G-code saved to: {output_path}")
-
-
-# Example usage
-modify_gcode(
-    input_path='example_input.gcode',
-    output_path='modified_output.gcode',
-    nozzle_temp=215,
-    bed_temp=65,
-    print_speed=2200
-)

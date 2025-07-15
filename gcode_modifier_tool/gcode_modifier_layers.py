@@ -65,7 +65,7 @@ if __name__ == '__main__':
     if args.preset:
         temp_settings, speed_settings = load_json_preset(args.preset)
     elif args.material:
-        material_path = os.path.join("presets", f"{args.material}.json")
+        material_path = os.path.join(os.path.dirname(__file__), "presets", f"{args.material}.json")
         temp_settings, speed_settings = load_json_preset(material_path)
     else:
         if args.temp_at_layers:
