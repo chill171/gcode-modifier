@@ -3,6 +3,35 @@ import re
 import json
 import os
 
+from datetime import datetime
+
+def write_summary_log(output_path, input_path, temp_settings, speed_settings, mode):
+    summary_path = output_path.replace('.gcode', '_summary.txt')
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    with open(summary_path, 'w') as f:
+        f.write(f"🔧 G-code Modification Summary\n")
+        f.write(f"Timestamp     : {now}\n")
+        f.write(f"Input file    : {input_path}\n")
+        f.write(f"Output file   : {output_path}\n")
+        f.write(f"Mode          : {mode}\n")
+
+        f.write("\nLayer Temp Changes:\n")
+        if temp_settings:
+            for layer, temp in sorted(temp_settings.items()):
+                f.write(f"  Layer {layer}: {temp}°C\n")
+        else:
+            f.write("  None\n")
+
+        f.write("\nLayer Speed Changes:\n")
+        if speed_settings:
+            for layer, speed in sorted(speed_settings.items()):
+                f.write(f"  Layer {layer}: {speed} mm/min\n")
+        else:
+            f.write("  None\n")
+
+    print(f"Summary saved to: {summary_path}")
+
 def parse_layer_settings(arg_list):
     result = {}
     for entry in arg_list:
@@ -79,3 +108,18 @@ if __name__ == '__main__':
         temp_layers=temp_settings,
         speed_layers=speed_settings
     )
+
+    # Save a summary file
+    summary_name = os.path.splitext(os.path.basename(args.output))[0] + "_summary.txt"
+    summary_path = os.path.join("gcode_modifier_tool", "test_outputs", "summaries", summary_name)
+
+    with open(summary_path, 'w') as summary:
+        summary.write(f"G-code: {args.output}\n")
+        summary.write(f"Material: {args.material or 'N/A'}\n")
+        summary.write(f"Preset: {args.preset or 'N/A'}\n")
+        summary.write(f"Temp layers: {temp_settings or 'N/A'}\n")
+        summary.write(f"Speed layers: {speed_settings or 'N/A'}\n")
+
+    print(f"Summary saved to: {summary_path}")
+
+  

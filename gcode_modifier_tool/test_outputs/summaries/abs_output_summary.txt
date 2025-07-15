@@ -1,0 +1,5 @@
+G-code: gcode_modifier_tool/test_outputs/abs_output.gcode
+Material: abs
+Preset: N/A
+Temp layers: {0: 230, 4: 235, 8: 240}
+Speed layers: {0: 1800, 5: 2000, 10: 2200}
