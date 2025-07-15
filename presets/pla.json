@@ -1,0 +1,13 @@
+{
+  "default_temp": 205,
+  "default_bed": 60,
+  "temp_at_layers": {
+    "0": 200,
+    "3": 205,
+    "6": 210
+  },
+  "speed_at_layers": {
+    "0": 1800,
+    "4": 2200
+  }
+}

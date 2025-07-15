@@ -1,6 +1,7 @@
 import argparse
 import re
 import json
+import os
 
 def parse_layer_settings(arg_list):
     result = {}
@@ -40,7 +41,7 @@ def modify_gcode(input_path, output_path, temp_layers=None, speed_layers=None):
 
     print(f"Modified G-code saved to: {output_path}")
 
-def load_preset(filepath):
+def load_json_preset(filepath):
     with open(filepath, 'r') as file:
         data = json.load(file)
     temp_layers = {int(k): v for k, v in data.get('temp_at_layers', {}).items()}
@@ -48,20 +49,29 @@ def load_preset(filepath):
     return temp_layers, speed_layers
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Modify G-code by layer using direct args or JSON preset.')
+    parser = argparse.ArgumentParser(description='Modify G-code using CLI or preset or material profile.')
     parser.add_argument('--input', required=True, help='Input G-code file')
     parser.add_argument('--output', required=True, help='Output G-code file')
-    parser.add_argument('--preset', help='Path to JSON preset file')
-    parser.add_argument('--temp_at_layers', nargs='*', help='Manual temp settings TEMP:LAYER')
-    parser.add_argument('--speed_at_layers', nargs='*', help='Manual speed settings SPEED:LAYER')
+    parser.add_argument('--preset', help='Path to custom JSON preset file')
+    parser.add_argument('--material', help='Material name (loads presets/<material>.json)')
+    parser.add_argument('--temp_at_layers', nargs='*', help='Manual temp changes TEMP:LAYER')
+    parser.add_argument('--speed_at_layers', nargs='*', help='Manual speed changes SPEED:LAYER')
 
     args = parser.parse_args()
 
+    temp_settings = None
+    speed_settings = None
+
     if args.preset:
-        temp_settings, speed_settings = load_preset(args.preset)
+        temp_settings, speed_settings = load_json_preset(args.preset)
+    elif args.material:
+        material_path = os.path.join("presets", f"{args.material}.json")
+        temp_settings, speed_settings = load_json_preset(material_path)
     else:
-        temp_settings = parse_layer_settings(args.temp_at_layers) if args.temp_at_layers else None
-        speed_settings = parse_layer_settings(args.speed_at_layers) if args.speed_at_layers else None
+        if args.temp_at_layers:
+            temp_settings = parse_layer_settings(args.temp_at_layers)
+        if args.speed_at_layers:
+            speed_settings = parse_layer_settings(args.speed_at_layers)
 
     modify_gcode(
         input_path=args.input,
